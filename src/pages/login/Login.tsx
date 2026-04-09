@@ -14,6 +14,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogDescription,
 } from "@/components/ui/alert-dialog";
 import { useAuth } from "@/contexts/UserContext";
 
@@ -160,6 +161,9 @@ const Login: React.FC = () => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Login was unsuccessful.</AlertDialogTitle>
+            <AlertDialogDescription>
+              Please check your credentials and try again.
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogAction

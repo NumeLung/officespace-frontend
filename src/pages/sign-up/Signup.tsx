@@ -10,6 +10,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogDescription,
 } from "@/components/ui/alert-dialog";
 
 export interface RegisterUserRequest {
@@ -144,6 +145,9 @@ const Signup: React.FC = () => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Register was unsuccessful.</AlertDialogTitle>
+            <AlertDialogDescription>
+              There was an error while trying to register your account. Please try again.
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogAction
@@ -164,6 +168,9 @@ const Signup: React.FC = () => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Register was successful.</AlertDialogTitle>
+            <AlertDialogDescription>
+              Your account has been successfully created.
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogAction

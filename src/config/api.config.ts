@@ -1,10 +1,10 @@
 import { ApiConfig } from "@/types/api.types";
 
 const getApiUrl = (): string => {
-    const apiUrl = import.meta.env.REACT_APP_API_URL;
+    const apiUrl = import.meta.env.VITE_API_URL;
     if (!apiUrl) {
-        console.warn('VITE_API_URL is not defined, using default localhost:8087');
-        return 'http://localhost:8087';
+        console.warn('VITE_API_URL is not defined, using default localhost:8080');
+        return 'http://localhost:8080';
     }
     return apiUrl;
 };

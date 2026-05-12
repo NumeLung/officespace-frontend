@@ -42,30 +42,20 @@ export class ReservationService {
 
     const request = createRequest(createReservationRequest);
 
-    const response: AxiosResponse<createReservationResponse> = await api.post(
-      `${API_CONFIG.ENDPOINTS.RESERVATIONS.CREATE}`,
-      request
-    );
+    try {
+      const response: AxiosResponse<createReservationResponse> = await api.post(
+        `${API_CONFIG.ENDPOINTS.RESERVATIONS.CREATE}`,
+        request
+      );
 
-    if (response.status !== 200) {
-      throw new Error(response.data.errorDescription || "Failed to create reservation");
-    }
-  }
-  catch(error: any) {
-    if (error.response) {
-      const errorResponse: createReservationResponse = {
-        date: new Date(),
-        errorDescription: error.response.data.errorDescription || "Server error",
-        responseId: crypto.randomUUID(),
-        status: error.response.status.toString(),
-        description: error.response.data.description || "Failed to create reservation",
-        data: "",
-      };
-      throw errorResponse;
-    } else if (error.request) {
-      throw new Error("No response received from server");
-    } else {
-      throw new Error("Error setting up request: " + error.message);
+      if (response.status !== 200) {
+        throw new Error(response.data.errorDescription || "Failed to create reservation");
+      }
+    } catch (error: any) {
+      if (error.response) {
+        throw new Error(error.response.data?.errorDescription || error.response.data?.description || "Failed to create reservation");
+      }
+      throw error;
     }
   }
 }

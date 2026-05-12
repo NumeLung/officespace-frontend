@@ -1,4 +1,5 @@
 import { BaseRequest } from "./base-api.type";
+import { OfficeRoom } from "./offices.types";
 import { Payment } from "./payment.types";
 import { ReservationDto } from "./reservation.type";
 
@@ -16,6 +17,7 @@ export interface User {
   reservations: ReservationDto[];
   payments: Payment[];
   notifications: UserNotificationDto[];
+  favoriteRooms?: OfficeRoom[];
 }
 
 export interface UserNotificationDto{

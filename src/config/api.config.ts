@@ -77,6 +77,10 @@ export const API_CONFIG: ApiConfig = {
         PAYMENTS: {
             CREATE_PAYMENT_SESSION: '/payment/create-session',
             CONFIRM_PAYMENT: '/payment/confirm',
+        },
+        FAVORITES: {
+            TOGGLE: '/favorites/toggle/',
+            GET_ALL: '/favorites',
         }
     },
 } as const;

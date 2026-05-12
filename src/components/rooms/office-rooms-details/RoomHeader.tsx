@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AlertCircle, MapPin, QrCode } from "lucide-react";
+import { AlertCircle, MapPin, QrCode, Heart } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
@@ -11,8 +11,15 @@ import {
 } from "@/components/ui/dialog";
 import { RoomHeaderProps } from "@/types/filter-props.types";
 import { RoomQrCode } from "./RoomQrCode";
+import { cn } from "@/lib/utils";
 
-export const RoomHeader: React.FC<RoomHeaderProps> = ({ room, isAuthenticated, onReportIssue }) => {
+export const RoomHeader: React.FC<RoomHeaderProps> = ({
+  room,
+  isAuthenticated,
+  onReportIssue,
+  isFavorited = false,
+  onToggleFavorite,
+}) => {
   const [isQrOpen, setIsQrOpen] = useState(false);
   const roomUrl = `${window.location.origin}/room-details/${room.id}`;
 
@@ -26,11 +33,27 @@ export const RoomHeader: React.FC<RoomHeaderProps> = ({ room, isAuthenticated, o
             {room.building}, Floor {room.floor}
           </p>
         </div>
-        <div className="flex gap-4 items-center">
+        <div className="flex gap-3 items-center">
           {isAuthenticated && (
             <Button variant="outline" onClick={onReportIssue} className="gap-2">
               <AlertCircle className="h-4 w-4" />
               Report Issue
+            </Button>
+          )}
+          {isAuthenticated && onToggleFavorite && (
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={onToggleFavorite}
+              aria-label={isFavorited ? "Remove from favorites" : "Save to favorites"}
+              className="h-9 w-9"
+            >
+              <Heart
+                className={cn(
+                  "h-5 w-5 transition-colors",
+                  isFavorited ? "fill-rose-500 text-rose-500" : "text-muted-foreground"
+                )}
+              />
             </Button>
           )}
           <Button variant="outline" onClick={() => setIsQrOpen(true)} className="gap-2">

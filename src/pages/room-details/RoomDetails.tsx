@@ -22,6 +22,7 @@ import { ReservationList } from "@/components/rooms/office-rooms-details/Reserva
 import { CompanyInfo } from "@/components/rooms/office-rooms-details/CompanyInfo";
 import { RoomDetails } from "@/components/rooms/office-rooms-details/RoomDetails";
 import { RoomHeader } from "@/components/rooms/office-rooms-details/RoomHeader";
+import { FavoriteService } from "@/services/favoriteService";
 
 const preparePaymentSessionRequest = (
   reservation: CreateReservationRequest,
@@ -68,29 +69,47 @@ const RoomDetailsPage: React.FC = () => {
   const [duration, setDuration] = useState<string>("1");
   const [isBookingDialogOpen, setIsBookingDialogOpen] = useState(false);
   const [isIssueReportDialogOpen, setIsIssueReportDialogOpen] = useState(false);
+  const [isFavorited, setIsFavorited] = useState(false);
   const service = OfficeService.getInstance();
+  const favoriteService = FavoriteService.getInstance();
   const { user, isAuthenticated } = useAuth();
   const reservationService = ReservationService.getInstance();
   const paymentService = PaymentService.getInstance();
 
   const loadOfficeData = () => {
-    if (id === undefined) {
-      return;
-    }
-
+    if (id === undefined) return;
     service
       .getOfficeById(id)
-      .then((data) => {
-        setRoom(data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+      .then((data) => setRoom(data))
+      .catch((error) => console.error(error));
+  };
+
+  const loadFavoriteState = () => {
+    if (!isAuthenticated || !id) return;
+    favoriteService
+      .getFavoriteRooms()
+      .then((rooms) => setIsFavorited(rooms.some((r) => r.id === id)))
+      .catch(() => {});
+  };
+
+  const handleToggleFavorite = async () => {
+    if (!id) return;
+    const prev = isFavorited;
+    setIsFavorited(!prev);
+    try {
+      await favoriteService.toggleFavoriteRoom(id);
+    } catch {
+      setIsFavorited(prev);
+    }
   };
 
   useEffect(() => {
     loadOfficeData();
   }, []);
+
+  useEffect(() => {
+    loadFavoriteState();
+  }, [isAuthenticated, id]);
 
   const getAvailableTimeSlots = (
     date: Date | undefined,
@@ -272,6 +291,8 @@ const RoomDetailsPage: React.FC = () => {
         room={room}
         isAuthenticated={isAuthenticated}
         onReportIssue={() => setIsIssueReportDialogOpen(true)}
+        isFavorited={isFavorited}
+        onToggleFavorite={handleToggleFavorite}
       />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="md:col-span-2">

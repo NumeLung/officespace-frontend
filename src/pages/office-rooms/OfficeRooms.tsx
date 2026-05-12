@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/UserContext";
 import { OfficeService } from "@/services/officeService";
+import { FavoriteService } from "@/services/favoriteService";
 import { OfficeRoom, RoomType } from "@/types/offices.types";
 import { useNavigate } from "react-router-dom";
 import { RoomCard } from "@/components/rooms/office-rooms/RoomCard";
@@ -8,10 +10,13 @@ import { RoomFilters } from "@/components/rooms/office-rooms/RoomFilters";
 
 const RoomListing: React.FC = () => {
   const service = OfficeService.getInstance();
+  const favoriteService = FavoriteService.getInstance();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [rooms, setRooms] = useState<OfficeRoom[]>([]);
   const [filteredRooms, setFilteredRooms] = useState<OfficeRoom[]>([]);
+  const [favoritedIds, setFavoritedIds] = useState<Set<string>>(new Set());
   const [filters, setFilters] = useState({
     dateRange: {
       from: undefined as Date | undefined,
@@ -32,6 +37,32 @@ const RoomListing: React.FC = () => {
   useEffect(() => {
     loadRooms();
   }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    favoriteService
+      .getFavoriteRooms()
+      .then((favRooms) => setFavoritedIds(new Set(favRooms.map((r) => r.id))))
+      .catch(() => {});
+  }, [isAuthenticated]);
+
+  const handleToggleFavorite = async (roomId: string) => {
+    const wasFavorited = favoritedIds.has(roomId);
+    setFavoritedIds((prev) => {
+      const next = new Set(prev);
+      wasFavorited ? next.delete(roomId) : next.add(roomId);
+      return next;
+    });
+    try {
+      await favoriteService.toggleFavoriteRoom(roomId);
+    } catch {
+      setFavoritedIds((prev) => {
+        const next = new Set(prev);
+        wasFavorited ? next.add(roomId) : next.delete(roomId);
+        return next;
+      });
+    }
+  };
 
   const loadRooms = () => {
     service
@@ -158,7 +189,13 @@ const RoomListing: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredRooms.length > 0 ? (
           filteredRooms.map((room) => (
-            <RoomCard key={room.id} room={room} onViewDetails={handleViewDetails} />
+            <RoomCard
+              key={room.id}
+              room={room}
+              onViewDetails={handleViewDetails}
+              isFavorited={favoritedIds.has(room.id)}
+              onToggleFavorite={handleToggleFavorite}
+            />
           ))
         ) : (
           <div className="col-span-full text-center py-8">

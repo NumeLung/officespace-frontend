@@ -64,6 +64,8 @@ export interface PriceRangeFilterProps {
 export interface RoomCardProps {
   room: OfficeRoom;
   onViewDetails: (roomId: string) => void;
+  isFavorited?: boolean;
+  onToggleFavorite?: (roomId: string) => void;
 }
 
 //Room Details Props
@@ -71,6 +73,8 @@ export interface RoomHeaderProps {
   room: OfficeRoom;
   isAuthenticated?: boolean;
   onReportIssue: () => void;
+  isFavorited?: boolean;
+  onToggleFavorite?: () => void;
 }
 
 export interface RoomDetailsProps {
